@@ -2,7 +2,7 @@ from pymavlink import mavutil
 import time
 
 # Establish connection to MAVLink
-connection = mavutil.mavlink_connection('tcp:127.0.0.1:5762')
+connection = mavutil.mavlink_connection('udp:192.168.180.15:14551')
 print('Waiting for heartbeat...')
 connection.wait_heartbeat()
 print("Heartbeat received!")
@@ -35,5 +35,3 @@ while True:
         alt = msg.relative_alt / 1000.0  # Convert from mm to meters (relative altitude)
 
         print(f"Position: Lat = {lat}°, Lon = {lon}°, Alt = {alt} meters")
-        break  # Stop after receiving the position
-    time.sleep(0.1)  # Prevent busy-waiting and overload
