@@ -2,10 +2,9 @@ from pymavlink import mavutil
 import time
 from helper_func import *
 
+mission_height  = 20
 
 master = connect('udp:<ip_ubuntu>:14551')
-
-print(f"Local position : {get_local_pos()}/ Global position : {get_global_pos()}")
 
 
 want_to_set_guided_auto= False
@@ -19,10 +18,10 @@ if want_to_set_guided_auto:
 input("Enter if ready to arm and takeoff")
 
 arm(master)
-takeoff(master, 20)
+takeoff(master, mission_height)
 
-input("Make small waypoint")
-local_target(master, [10,10,-20], acceptance_radius = 2)
+input("Press enter to make small waypoint")
+local_target(master, [10,10,-mission_height], acceptance_radius = 2)
 
 rtl_wanted = False
 if rtl_wanted:
