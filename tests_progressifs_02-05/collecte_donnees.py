@@ -6,4 +6,5 @@ master = connect('udp:<ip_ubuntu>:14551')
 
 
 while True:
-    print(f"Local position : {get_local_pos()}/ Global position : {get_global_pos()}")
+    print(f"Local position : {get_local_pos(master)}/ Global position : {get_global_pos(master)}")
+    time.sleep(0.1)

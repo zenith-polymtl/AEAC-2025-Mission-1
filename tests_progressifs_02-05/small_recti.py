@@ -7,10 +7,12 @@ mission_height = 10
 
 connection = connect('udp:<ip_ubuntu>:14551')
 
+input('Enter to set to GUIDED')
 # Set mode to GUIDED
 set_mode(connection, "GUIDED")
 
 
+input("Press enter to takeoff...")
 arm(connection)
 takeoff(connection, mission_height)
 
