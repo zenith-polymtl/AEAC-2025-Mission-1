@@ -1,19 +1,33 @@
 from pymavlink import mavutil
 import time
 import numpy as np
+import csv
 
 # Helper functions
-def is_near_waypoint(actual, target, threshold=2):
-    """
-    Check if the actual position is within a threshold distance of the target position.
+
+def is_near_waypoint(actual : list, target: list, threshold : float = 2.):
+    """Retoune True si la distance entre le drone et le target est < threshold. Else False.
+
+    Args:
+        actual (list): Position actuelle du drone (Coodonnées locales NED : [N, E, -Z])
+        target (list): Position visée à comparer (Coodonnées locales NED : [N, E, -Z])
+        threshold (float, optional): Distance à parti de laquelle retourner True. Defaults to 2.
+
+    Returns:
+        bool: Vrai si le donne est assez proche, False otherwise
     """
     return np.linalg.norm(np.array(actual) - np.array(target)) < threshold
 
 
 def get_local_pos(connection, frequency_hz=60):
-    """
-    Retrieve the most recent LOCAL_POSITION_NED message.
-    Request message interval only once and process the latest message.
+    """Permet d'avoir la position locale, et fais une requête pour avoir les données à la fréquence désirée.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        frequency_hz (int, optional): Fréquence de demandes des données. Defaults to 60.
+
+    Returns:
+        Position (list): Position en système de Coodonnées locales NED : [N, E, -Z]) 
     """
 
     # Send the message request once at the beginning
@@ -32,6 +46,15 @@ def get_local_pos(connection, frequency_hz=60):
 
 
 def get_global_pos(connection, time_tag=False):
+    """Permet d'avoir la position locale, et fais une requête pour avoir les données à la fréquence désirée.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        time_tag (bool, optional): Fréquence de demandes des données. Defaults to 60.
+
+    Returns:
+        Position (list): Position en système de Coodonnées globales gps : [N, E, -Z]) 
+    """
 
     message_request(connection, message_type=mavutil.mavlink.MAVLINK_MSG_ID_GLOBAL_POSITION_INT, freq_hz=60)
 
@@ -68,6 +91,13 @@ def get_global_pos(connection, time_tag=False):
 
 
 def message_request(connection, message_type, freq_hz=10):
+    """Envoie une requète de message au drone, permet la réception d'un message spécifique, reçu à vitesse spécifique.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        message_type (id function message): Voir les types de messages de mavlink pouvant être demandé en mode copter
+        freq_hz (int, optional): Fréquence voulue d'envoi des données. Defaults to 10 Hz.
+    """
     interval_us = int(1e6 / freq_hz)  # Interval in microseconds
     # Send the command to set the message interval
     connection.mav.command_long_send(
@@ -86,6 +116,16 @@ def message_request(connection, message_type, freq_hz=10):
 
 
 def connect(ip_address='tcp:127.0.0.1:5762'):
+    """Permet une connection facile au drone, et l'atente de hearbeat pour s'assurer d'une communcation vivante.
+
+    Args:
+        ip_address (str, optional): Adresse ip de connection. 
+            Simulation_mavproxy : 'tcp:127.0.0.1:5762' .
+            Vrai_connection : 'udp:<ip_ubuntu>:14551' (S'assurer de bien avoir tranmsis le signal de l'antenne sur ce port et alloué la communication udp windows-ubuntu).
+
+    Returns:
+        connection (mavlink connection): connection au drone
+    """
     # Create the connection
     # Establish connection to MAVLink
     connection = mavutil.mavlink_connection(ip_address)
@@ -96,13 +136,24 @@ def connect(ip_address='tcp:127.0.0.1:5762'):
     return connection
 
 
-def set_mode(connection, mode):
-    mode_id = connection.mode_mapping()[mode]
+def set_mode(connection, mode : str):
+    """Permet de choisir facilement le mode à partir de sont string
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        mode (str): Identification en lettres du mode
+    """
+    mode_id = connection.mode_mapping()[mode] #Conversion du mode en son id
     connection.mav.set_mode_send(connection.target_system, mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED, mode_id)
     print(f"Setting mode to {mode}...")
 
 
 def arm(connection):
+    """Arme le drone
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+    """
     # Arm the vehicle
     print("Arming motors...")
     connection.mav.command_long_send(
@@ -125,6 +176,12 @@ def arm(connection):
 
 
 def takeoff(connection, altitude=10):
+    """Fait décoller le drone. Nécessite le mode 'GUIDED', et que le drone soit armé. 
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        altitude (int, optional): Alitude du drone en m de hauteur par rapport à l'origine. Defaults to 10.
+    """
     # Takeoff
     print(f"Taking off to {altitude} meters...")
     connection.mav.command_long_send(
@@ -146,18 +203,32 @@ def takeoff(connection, altitude=10):
 
 
 def connect_arm_takeoff(ip='tcp:127.0.0.1:5762', height=20):
+    """Permet la connection rapide, l'arm du drone et le décollage
+
+    Args:
+        ip (str, optional): Voir documentation de connect pour plus d'infos
+        height (int, optional): Hauteur de décollage du drone. Defaults to 20.
+    """
     connection = connect(ip)
 
     # Set mode to GUIDED
-
-    set_mode("GUIDED")
+    set_mode(connection, "GUIDED")
 
     arm(connection)
 
     takeoff(connection, height)
 
+    return connection
 
-def local_target(connection, wp, acceptance_radius=20):
+
+def local_target(connection, wp, acceptance_radius=5):
+    """Permet l'envoi facile d'une commande de déplacement du drône aux coordonnées locales en système NED.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        wp (list): liste des coordonnées en sytème de coordonnées local [N, E, D] (oui z doit être négatif pour avoir une hauteur positive)
+        acceptance_radius (int, optional): Distance à laquelle le drone considère la cible atteinte. Defaults to 5.
+    """
     connection.mav.set_position_target_local_ned_send(
         0,  # Time in milliseconds
         connection.target_system,
@@ -186,6 +257,11 @@ def local_target(connection, wp, acceptance_radius=20):
 
 
 def RTL(connection):
+    """Envoie une commande de RTL (return to launch). Attends que le drone soit atteri, une fois atteri, le drone est désarmé et la connection se ferme automatiquement, indiquant la fin de la mission.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+    """
     print("Returning to launch...")
     connection.mav.command_long_send(
         connection.target_system,
@@ -200,7 +276,8 @@ def RTL(connection):
         0,
         0,
     )
-    while get_local_pos(connection)[2] > -1:
+
+    while get_local_pos(connection)[2] > - 0.5:
         time.sleep(0.1)
     else:
         connection.motors_disarmed_wait()
@@ -209,7 +286,7 @@ def RTL(connection):
         connection.close()
         print("Connection closed. Mission Finished")
 
-import csv
+
 
 def insert_coordinates_to_csv(file_path, coordinates):
     """
@@ -277,6 +354,16 @@ def append_description_to_last_line(file_path, description):
 
 
 def spiral_scan(connection, largeur_detection = 10, altitude = 10, rayon_scan = 100, safety_margin = 0, center = None):
+    """Permet de générer des points à suivre afin de faire le scan d'une zone circulaire, en effectuant une spirale. Permet ausis de mesurer le temps pris pour faire l'ensemble du scan.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        largeur_detection (int, optional): Distance horizontale sur laquelle le drone peut détecter un émetter. Defaults to 10.
+        altitude (int, optional): Hauteur relative du home à laquelle effecteur le scan. Defaults to 10.
+        rayon_scan (int, optional): Rayon de la zone à scanner. Defaults to 100.
+        safety_margin (int, optional): Ajout de distance au rayon afin de compenser une erreur de positionnement initial. Defaults to 0.
+        center (local_pos, optional): Coordonnées locales du centre du scan. Si laissé à None, prendre la position initiale quand la fonction est appelée.
+    """
     if center is None:
         pos = get_local_pos(connection)
     else:
@@ -306,6 +393,16 @@ def spiral_scan(connection, largeur_detection = 10, altitude = 10, rayon_scan = 
 
 
 def rectilinear_scan(connection, largeur_detection = 10, altitude = 10, rayon_scan = 100, safety_margin = 0, center = None):
+    """Permet de générer des points à suivre afin de faire le scan d'une zone circulaire, en effectuant une forme rectilinéaire. Permet ausis de mesurer le temps pris pour faire l'ensemble du scan.
+
+    Args:
+        connection (mavlink connection): Connection au drone, souvent appelée master ou connection
+        largeur_detection (int, optional): Distance horizontale sur laquelle le drone peut détecter un émetter. Defaults to 10.
+        altitude (int, optional): Hauteur relative du home à laquelle effecteur le scan. Defaults to 10.
+        rayon_scan (int, optional): Rayon de la zone à scanner. Defaults to 100.
+        safety_margin (int, optional): Ajout de distance au rayon afin de compenser une erreur de positionnement initial. Defaults to 0.
+        center (local_pos, optional): Coordonnées locales du centre du scan. Si laissé à None, prendre la position initiale quand la fonction est appelée.
+    """
     if center is None:
         pos = get_local_pos(connection)
     else:
@@ -339,7 +436,7 @@ def rectilinear_scan(connection, largeur_detection = 10, altitude = 10, rayon_sc
     start_time = time.time()
 
     for i in range(len(x)):
-        wp = [x[i] + pos[0], y[i] + pos[1], -10]
+        wp = [x[i] + pos[0], y[i] + pos[1], -altitude]
         local_target(connection, wp, acceptance_radius=3)
 
     total_time = time.time() - start_time
