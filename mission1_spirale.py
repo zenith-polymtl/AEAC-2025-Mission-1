@@ -3,26 +3,26 @@ import time
 import numpy as np
 from helper_func import *
 
-
-connection = connect()
+nav = pymav()
+nav.connect()
 
 # Set mode to GUIDED
-set_mode(connection, "GUIDED")
+nav.set_mode( "GUIDED")
 
 
-arm(connection)
-takeoff(connection, 10)
+nav.arm()
+nav.takeoff( 10)
 
 input("Press enter to send current coordinates as source of fire...")
-insert_coordinates_to_csv("fire_coordinates.csv", get_global_pos(connection))
+nav.insert_coordinates_to_csv("fire_coordinates.csv", nav.get_global_pos())
 
 desc = input("Please enter description of source...")
-append_description_to_last_line("fire_coordinates.csv", desc)
+nav.append_description_to_last_line("fire_coordinates.csv", desc)
 
 
 input("Press enter to get position of the eye of the spiral")
 
-pos = get_local_pos(connection)
+pos = nav.get_local_pos()
 print(f"Current position: {pos}")
 
 input("Press Confirm local pos...")
@@ -48,10 +48,10 @@ start_time = time.time()
 
 for i in range(len(x_spiral)):
     wp = [x_spiral[i], y_spiral[i], -10]
-    local_target(connection, wp, acceptance_radius=10)
+    nav.local_target(wp, acceptance_radius=10)
 
 total_time = time.time() - start_time
 print(f"Total time: {total_time} seconds")
 # Land
 
-RTL(connection)
+nav.RTL()

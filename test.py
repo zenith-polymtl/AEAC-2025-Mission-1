@@ -65,12 +65,12 @@ def start_mission(the_connection):
         0, 0, 0, 0, 0, 0, 0, 0
     )
     ack(the_connection, "COMMAND_ACK")
-
+nav = pymav()
 # Start mission
-connection = connect()
-set_mode(connection, "GUIDED")
+nav.connect()
+nav.set_mode( "GUIDED")
 
-home = get_global_pos(connection)
+home = nav.get_global_pos()
 print(f"Home position: {home}")
 
 # Define waypoints with unique sequence numbers
@@ -81,12 +81,12 @@ wps = [
 ]
 
 
-arm(connection)
-takeoff(connection, 10)
-upload_mission(connection, wps)
+nav.arm()
+nav.takeoff(10)
+upload_mission(nav.connection, wps)
 input("Please confirm mission status...")
 input("Press enter to send into mission...")
 
-set_mode(connection, "AUTO")
+nav.set_mode("AUTO")
 
-start_mission(connection)
+start_mission(nav.connection)
