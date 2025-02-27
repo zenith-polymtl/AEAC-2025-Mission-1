@@ -2,8 +2,8 @@ from pymavlink import mavutil
 import time
 from helper_func import *
 
-
-master = connect('udp:<ip_ubuntu>:14551')
+nav = pymav()
+nav.connect('udp:<ip_ubuntu>:14551')
 
 
 
@@ -12,9 +12,9 @@ input(f"The job of the pilot is now to takeoff, ans set into guided mode if {not
 if want_to_set_guided_auto:
     
     mode = 'GUIDED'
-    print(f"Local position : {get_local_pos(master)}/ Global position : {get_global_pos(master)}")
+    print(f"Local position : {nav.get_local_pos()}/ Global position : {nav.get_global_pos()}")
     input(f"Press enter to set mode {mode}")
-    set_mode(master, mode)
+    nav.set_mode(mode)
 
 
-local_target(master, [10,10,-20], acceptance_radius = 2)
+nav.local_target( [10,10,-20], acceptance_radius = 2)

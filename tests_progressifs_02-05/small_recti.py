@@ -3,18 +3,19 @@ import time
 import numpy as np
 from helper_func import *
 
+nav = pymav()
 mission_height = 10
 
-connection = connect('udp:<ip_ubuntu>:14551')
+nav.connect('udp:<ip_ubuntu>:14551')
 
 input('Enter to set to GUIDED')
 # Set mode to GUIDED
-set_mode(connection, "GUIDED")
+nav.set_mode( "GUIDED")
 
 
 input("Press enter to takeoff...")
-arm(connection)
-takeoff(connection, mission_height)
+nav.arm()
+nav.takeoff(mission_height)
 
 
 """
@@ -27,7 +28,7 @@ append_description_to_last_line("fire_coordinates.csv", desc)
 
 input("Press enter to get position of the eye of the spiral")
 
-pos = get_local_pos(connection)
+pos = nav.get_local_pos()
 print(f"Current position: {pos}")
 
 input("Press Confirm local pos...")
@@ -58,10 +59,10 @@ start_time = time.time()
 
 for i in range(len(x)):
     wp = [x[i] + pos[0], y[i] + pos[1], -mission_height]
-    local_target(connection, wp, acceptance_radius=1.5)
+    nav.local_target(wp, acceptance_radius=1.5)
 
 total_time = time.time() - start_time
 print(f"Total time: {total_time} seconds")
 # Land
 
-RTL(connection)
+nav.RTL()
