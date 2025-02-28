@@ -209,7 +209,7 @@ class pymav():
             if while_moving is not None:
                 while_moving()
             else:
-                time.sleep(0.1)
+                pass
 
 
     def connect_arm_takeoff(self, ip='tcp:127.0.0.1:5762', height=20):
@@ -264,12 +264,12 @@ class pymav():
             if while_moving is not None:
                 while_moving()
             else:
-                time.sleep(0.1)
+                pass
         else:
             print("Waypoint reached!")
 
 
-    def RTL(self):
+    def RTL(self, while_moving = None):
         """Envoie une commande de RTL (return to launch). Attends que le drone soit atteri, une fois atteri, le drone est désarmé et la connection se ferme automatiquement, indiquant la fin de la mission.
 
         Args:
@@ -292,7 +292,10 @@ class pymav():
         )
 
         while self.get_local_pos(connection)[2] > - 0.5:
-            time.sleep(0.1)
+            if while_moving is not None:
+                while_moving()
+            else:
+                pass
         else:
             connection.motors_disarmed_wait()
             print("Landed and motors disarmed!")
