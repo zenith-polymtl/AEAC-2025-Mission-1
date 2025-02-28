@@ -1,3 +1,7 @@
+##Test script qui n'a jamais fonctionné, projet de faire des missions conventionnelles abandonnées, même si ça contient un potentiel
+##La gestion des tâches et du processus en guided est plus facile
+
+
 from pymavlink import mavutil
 import numpy as np
 import time

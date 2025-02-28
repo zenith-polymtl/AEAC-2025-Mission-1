@@ -1,3 +1,5 @@
+#Idée de fonctionnement pour l'interpolation des données GPS à plus haute fréquence
+
 from pymavlink import mavutil
 import time
 from helper_func import *
