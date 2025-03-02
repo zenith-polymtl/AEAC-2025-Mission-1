@@ -4,14 +4,14 @@ import numpy as np
 from helper_func import *
 
 nav = pymav()
-connection = nav.connect('udp:127.0.0.1:14551')
+connection = nav.connect('tcp:127.0.0.1:5763')
 
 # Set mode to GUIDED
 nav.set_mode("GUIDED")
 
 
 nav.arm()
-nav.takeoff( 10)
+nav.takeoff(10)
 
 
 input("Press enter to get position of the eye of the spiral")
