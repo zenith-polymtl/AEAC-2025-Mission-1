@@ -16,9 +16,9 @@ if want_to_set_guided_auto:
     nav.arm()
     nav.takeoff(mission_height)
 
-nav.local_target([10, 10,-mission_height], acceptance_radius = 2)
-nav.local_target([-10, -10,-mission_height], acceptance_radius = 2)
-nav.local_target( [0,0,-mission_height], acceptance_radius = 2)
+nav.local_target([10, 10,-mission_height], acceptance_radius = 1)
+nav.local_target([-10, -10,-mission_height], acceptance_radius = 1)
+nav.local_target( [0,0,-mission_height], acceptance_radius = 1)
 
 
 rtl_wanted = True

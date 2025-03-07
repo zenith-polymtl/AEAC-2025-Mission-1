@@ -16,12 +16,11 @@ if want_to_set_guided_auto:
     nav.set_mode(mode)
 
 
-input("Enter if ready to arm and takeoff")
+input("ARM DRONE, and press Enter if ready to takeoff")
 
-nav.arm()
-nav.takeoff( 20)
+nav.takeoff(10)
 
-want_to_set_guided_auto = True
+want_to_set_guided_auto = False
 if want_to_set_guided_auto:
     input(f"Press enter to set mode LOITER")
     nav.set_mode('LOITER')

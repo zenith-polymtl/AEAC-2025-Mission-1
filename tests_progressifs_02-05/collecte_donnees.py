@@ -3,7 +3,7 @@ import time
 from helper_func import *
 nav = pymav()
 
-nav.connect('udp:<ip_ubuntu>:14551')
+nav.connect('tcp:127.0.0.1:5763')
 
 
 while True:
