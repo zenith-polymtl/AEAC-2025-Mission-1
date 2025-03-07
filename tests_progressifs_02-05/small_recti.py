@@ -6,15 +6,14 @@ from helper_func import *
 nav = pymav()
 mission_height = 10
 
-nav.connect('udp:<ip_ubuntu>:14551')
+nav.connect('tcp:127.0.0.1:5763')
 
 input('Enter to set to GUIDED')
 # Set mode to GUIDED
 nav.set_mode( "GUIDED")
 
 
-input("Press enter to takeoff...")
-nav.arm()
+input("Now arm the drone, and press enter to takeoff...")
 nav.takeoff(mission_height)
 
 
@@ -65,4 +64,5 @@ total_time = time.time() - start_time
 print(f"Total time: {total_time} seconds")
 # Land
 
+input('Press enter to return to launch site')
 nav.RTL()
