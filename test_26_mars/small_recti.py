@@ -4,7 +4,7 @@ import numpy as np
 from helper_func import *
 
 nav = pymav()
-mission_height = 7
+mission_height = 8
 
 nav.connect('udp:127.0.0.1:14551')
 #nav.connect('tcp:127.0.0.1:5763')
