@@ -55,7 +55,7 @@ class pymav():
 
     def get_global_pos(self, time_tag=False, heading = False):
         connection = self.connection
-        self.message_request(connection, message_type=mavutil.mavlink.MAVLINK_MSG_ID_GLOBAL_POSITION_INT, freq_hz=60)
+        self.message_request(message_type=mavutil.mavlink.MAVLINK_MSG_ID_GLOBAL_POSITION_INT, freq_hz=60)
 
         while connection.recv_match(type="GLOBAL_POSITION_INT", blocking=False):
             pass  # Discard old messages

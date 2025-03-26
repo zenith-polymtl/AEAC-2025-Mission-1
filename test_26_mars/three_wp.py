@@ -1,7 +1,7 @@
 from pymavlink import mavutil
 import time
 from helper_func import *
-mission_height = 20
+mission_height = 7
 
 nav = pymav()
 nav.connect('udp:127.0.0.1:14551')
