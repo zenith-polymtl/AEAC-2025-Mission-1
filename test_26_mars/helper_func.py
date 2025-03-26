@@ -2,7 +2,7 @@ from pymavlink import mavutil
 import time
 import numpy as np
 import csv
-
+from math import atan2
 # Helper functions
 
 class pymav():
@@ -262,7 +262,7 @@ class pymav():
         self.takeoff(height)
 
 
-    def local_target(self, wp, acceptance_radius=5, while_moving = None):
+    def local_target(self, wp, acceptance_radius=5, while_moving = None, turn_into_wp = False):
         """Permet l'envoi facile d'une commande de déplacement du drône aux coordonnées locales en système NED.
 
         Args:
@@ -273,6 +273,14 @@ class pymav():
         """
         
         connection = self.connection
+
+        yaw_angle = 0
+        if turn_into_wp:
+            pos = self.get_local_pos
+            actual_x, actual_y = pos
+            yaw_angle = atan2(wp[0] - actual_x, wp[1] - actual_y)
+        
+
         connection.mav.set_position_target_local_ned_send(
             0,  # Time in milliseconds
             connection.target_system,
@@ -288,7 +296,7 @@ class pymav():
             0,
             0,
             0,  # No acceleration
-            0,
+            yaw_angle,
             0,  # No yaw or yaw rate
         )
 
