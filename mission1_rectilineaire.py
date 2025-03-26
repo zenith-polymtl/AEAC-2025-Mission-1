@@ -11,7 +11,7 @@ nav.set_mode("GUIDED")
 
 
 nav.arm()
-nav.takeoff( 10)
+nav.takeoff(10)
 
 
 input("Press enter to get position of the eye of the spiral")

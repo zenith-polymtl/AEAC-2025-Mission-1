@@ -1,0 +1,27 @@
+from pymavlink import mavutil
+import time
+from helper_func import *
+
+mission_height = 20
+
+nav = pymav()
+#nav.connect('udp:127.0.0.1:14551')
+nav.connect('tcp:127.0.0.1:5763')
+
+input(f"Set to GUIDED, ARM, press ENTER for Takoeff")
+
+nav.takeoff(mission_height)
+
+
+input(f"Press enter to go wp")
+nav.local_target([10, 0,-mission_height], acceptance_radius = 1)
+
+
+
+rtl_wanted = True
+if rtl_wanted:
+    mode = 'RTL'
+    input(f"Press enter to set mode {mode}")
+    nav.RTL()
+
+input(f"Press enter to close")
