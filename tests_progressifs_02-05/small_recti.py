@@ -6,11 +6,11 @@ from helper_func import *
 nav = pymav()
 mission_height = 10
 
-nav.connect('tcp:127.0.0.1:5763')
+nav.connect('udp:127.0.0.1:14551')
 
-input('Enter to set to GUIDED')
+input('Enter when mode set to GUIDED')
 # Set mode to GUIDED
-nav.set_mode( "GUIDED")
+
 
 
 input("Now arm the drone, and press enter to takeoff...")

@@ -3,9 +3,9 @@ import time
 from helper_func import *
 
 nav = pymav()
-nav.connect('udp:<ip_ubuntu>:14551')
+nav.connect('udp:127.0.0.1:14551')
 
-print(f"Local position : {nav.get_local_pos(nav.master)}/ Global position : {nav.get_global_pos()}")
+print(f"Local position : {nav.get_local_pos()}/ Global position : {nav.get_global_pos()}")
 
 
 want_to_set_guided_auto= False
@@ -18,7 +18,7 @@ if want_to_set_guided_auto:
 
 input("ARM DRONE, and press Enter if ready to takeoff")
 
-nav.takeoff(10)
+nav.takeoff(5)
 
 want_to_set_guided_auto = False
 if want_to_set_guided_auto:

@@ -5,7 +5,7 @@ from helper_func import *
 nav = pymav()
 #nav.connect('udp:<ip_ubuntu>:14551')
 
-nav.connect('tcp:127.0.0.1:5763')
+nav.connect('udp:127.0.0.1:14551')
 
 want_to_set_guided_auto= False
 input(f"The job of the pilot is now to takeoff, and set into guided mode if {not want_to_set_guided_auto}. Enter if done ")

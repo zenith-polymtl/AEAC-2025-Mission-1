@@ -6,7 +6,7 @@ nav = pymav()
 
 format_ip_en_vrai = 'udp:<ip_ubuntu>:14551'
 
-nav.connect('udp:<ip_ubuntu>:14551')
+nav.connect('udp:127.0.0.1:14551')
 
 print(f"Local position : {nav.get_local_pos()}/ Global position : {nav.get_global_pos()}")
 
