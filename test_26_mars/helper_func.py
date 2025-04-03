@@ -286,7 +286,7 @@ class pymav():
             connection.target_system,
             connection.target_component,
             mavutil.mavlink.MAV_FRAME_LOCAL_NED,
-            0b110111111000,  # Position mask
+            0b10011111000,  # Position mask
             wp[0],
             wp[1],
             wp[2],  # X (North), Y (East), Z (Down)

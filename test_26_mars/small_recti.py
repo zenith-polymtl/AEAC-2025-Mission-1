@@ -4,7 +4,7 @@ import numpy as np
 from helper_func import *
 
 nav = pymav()
-mission_height = 7
+mission_height = 10
 
 nav.connect('udp:127.0.0.1:14551')
 #nav.connect('tcp:127.0.0.1:5763')
@@ -31,7 +31,7 @@ print(f"Current position: {pos}")
 input("Press Confirm local pos...")
 
 e = 2
-radius = 10
+radius = 13
 x = []
 y = []
 high = True
@@ -56,7 +56,7 @@ start_time = time.time()
 
 for i in range(len(x)):
     wp = [x[i] + pos[0], y[i] + pos[1], -mission_height]
-    nav.local_target(wp, acceptance_radius=1)
+    nav.local_target(wp, acceptance_radius=1.7)
     print(f"Next target : {wp}")
 
 total_time = time.time() - start_time
