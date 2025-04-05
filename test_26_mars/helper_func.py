@@ -4,15 +4,82 @@ import numpy as np
 import csv
 from math import atan2
 # Helper functions
+from geopy.distance import distance
+from geopy import Point
 
 class pymav():
-    def __init__(self):
+    def __init__(self, gps_thresh= None, ip = 'tcp:127.0.0.1:5762' ):
         self = self
         self.last_message_req = None
 
-        
-        
-    def is_near_waypoint(self, actual : list, target: list, threshold : float = 2.):
+        self.connect(ip)
+
+        if gps_thresh is not None:
+            gps_pos = self.get_global_pos()
+            ref_point = Point(gps_pos[0], gps_pos[1])
+            point_north = distance(meters=gps_thresh).destination(ref_point, bearing=0)
+            self.lat_thresh = abs(point_north.latitude - ref_point.latitude)
+
+            # 1.7 meters East (Longitude axis)
+            point_east = distance(meters=gps_thresh).destination(ref_point, bearing=90)
+            self.lon_thresh = abs(point_east.longitude - ref_point.longitude)
+
+    def connect(self, ip_address='tcp:127.0.0.1:5762'):
+        """Permet une connection facile au drone, et l'atente de hearbeat pour s'assurer d'une communcation vivante.
+
+        Args:
+            ip_address (str, optional): Adresse ip de connection. 
+                Simulation_mavproxy : 'tcp:127.0.0.1:5762' .
+                Vrai_connection : 'udp:<ip_ubuntu>:14551' (S'assurer de bien avoir tranmsis le signal de l'antenne sur ce port et alloué la communication udp windows-ubuntu).
+
+        Returns:
+            None
+        """
+        # Create the self.connection
+        # Establish connection to MAVLink
+        self.connection = mavutil.mavlink_connection(ip_address)
+        print('Waiting for heartbeat...')
+        self.connection.wait_heartbeat()
+        print("Heartbeat received!")
+    
+    def global_target(self, wp, acceptance_radius=8e-6, while_moving=None, wait_to_reach=True):
+            """Sends a movement command to the drone for a specific global GPS coordinate.
+
+            Args:
+                wp (tuple): Target waypoint as (latitude, longitude, altitude in meters).
+                acceptance_radius (float, optional): Distance at which the target is considered reached. Defaults to 5 meters.
+                while_moving (function, optional): Function to execute while the drone is in transit.
+                wait_to_reach (bool, optional): Whether to wait for the drone to reach the target before proceeding.
+            """
+            connection = self.connection
+
+            # Send a MAVLink command to set the target global position
+            connection.mav.set_position_target_global_int_send(
+                0,  # Timestamp in milliseconds
+                connection.target_system,
+                connection.target_component,
+                mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,  # Global frame with relative altitude
+                0b110111111000,  # Position mask
+                int(wp[0] * 1e7),  # Latitude in degrees * 1e7
+                int(wp[1] * 1e7),  # Longitude in degrees * 1e7
+                wp[2],  # Altitude in meters (relative to home)
+                0, 0, 0,  # No velocity set
+                0, 0, 0,  # No acceleration set
+                0, 0  # No yaw or yaw rate
+            )
+
+            if wait_to_reach:
+                # Wait for the waypoint to be reached
+                print("Waiting for waypoint to be reached...")
+                while not self.is_near_waypoint(self.get_global_pos(), wp, threshold=acceptance_radius, gps=True):
+                    if while_moving is not None:
+                        while_moving()
+                    else:
+                        pass
+                else:
+                    print("Waypoint reached!")
+
+    def is_near_waypoint(self, actual : list, target: list, threshold : float = 2., gps = False):
         """Retoune True si la distance entre le drone et le target est < threshold. Else False.
 
         Args:
@@ -23,7 +90,11 @@ class pymav():
         Returns:
             bool: Vrai si le donne est assez proche, False otherwise
         """
-        return np.linalg.norm(np.array(actual) - np.array(target)) < threshold
+        
+        if gps:
+            return (abs(actual[0] - target[0]) <= self.lat_thresh) and (abs(actual[1] - target[1]) <= self.lon_thresh)
+        else:
+            return np.linalg.norm(np.array(actual) - np.array(target)) < threshold
 
 
     def get_local_pos(self, frequency_hz=60):
@@ -153,25 +224,6 @@ class pymav():
                 0,  # Unused parameters
             )
             self.last_message_req = message_type
-
-
-    def connect(self, ip_address='tcp:127.0.0.1:5762'):
-        """Permet une connection facile au drone, et l'atente de hearbeat pour s'assurer d'une communcation vivante.
-
-        Args:
-            ip_address (str, optional): Adresse ip de connection. 
-                Simulation_mavproxy : 'tcp:127.0.0.1:5762' .
-                Vrai_connection : 'udp:<ip_ubuntu>:14551' (S'assurer de bien avoir tranmsis le signal de l'antenne sur ce port et alloué la communication udp windows-ubuntu).
-
-        Returns:
-            None
-        """
-        # Create the self.connection
-        # Establish connection to MAVLink
-        self.connection = mavutil.mavlink_connection(ip_address)
-        print('Waiting for heartbeat...')
-        self.connection.wait_heartbeat()
-        print("Heartbeat received!")
 
 
 
@@ -333,7 +385,7 @@ class pymav():
             0,
         )
 
-        while self.get_local_pos(connection)[2] > - 0.5:
+        while self.get_local_pos()[2] > - 0.5:
             if while_moving is not None:
                 while_moving()
             else:
