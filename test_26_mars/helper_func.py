@@ -399,7 +399,7 @@ class pymav():
 
 
 
-    def insert_coordinates_to_csv(file_path, coordinates):
+    def insert_coordinates_to_csv(self, file_path, coordinates, desc):
         """
         Inserts coordinates into a CSV file. If the file doesn't exist, it creates one with a header.
         
@@ -423,10 +423,10 @@ class pymav():
             
             # If the file doesn't exist, write the header
             if not file_exists:
-                writer.writerow(["Latitude", "Longitude"])
+                writer.writerow(["Latitude", "Longitude", "Description"])
             
 
-            writer.writerow([coordinates[0], coordinates[1], coordinates])
+            writer.writerow([coordinates[0], coordinates[1], desc])
 
     def append_description_to_last_line(file_path, description):
         """

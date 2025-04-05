@@ -15,14 +15,8 @@ input('Enter when mode set to GUIDED')
 input("Now arm the drone, and press enter to takeoff...")
 nav.takeoff(mission_height)
 
-
-"""
-input("Press enter to send current coordinates as source of fire...")
-insert_coordinates_to_csv("fire_coordinates.csv", get_global_pos(connection))
-
-desc = input("Please enter description of source...")
-append_description_to_last_line("fire_coordinates.csv", desc)
-"""
+desc = input("Enter the description to send current coordinates and coordinates as source of fire...")
+nav.insert_coordinates_to_csv("fire_coordinates.csv", nav.get_global_pos(), desc)
 
 input("Free to fly in LOITER. Press enter to get position of the center of scan zone. Make sure to then be in GUIDED")
 
