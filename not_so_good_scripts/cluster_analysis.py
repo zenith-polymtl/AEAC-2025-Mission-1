@@ -8,6 +8,7 @@ import time
 matplotlib.use('Agg')  # Use headless (non-GUI) backend
 import matplotlib.pyplot as plt
 import csv
+import os
 
 def get_latest_csv():
     """Finds the most recent CSV file in the data directory"""
@@ -28,7 +29,7 @@ while True:
             continue'''
 
         #print(f"🔄 Trying to load data from: {latest_csv}")
-        import os
+        
 
         file_path = "/home/avatar/companion_computer/ demo_sauvergarde/2025-02-06/hotspots_metadata.csv"
         if not os.path.exists(file_path):

@@ -12,11 +12,12 @@ BASE_URL = f"http://{SERVER_IP}:{SERVER_PORT}/"
 # List of specific files to download from the server
 FILES_TO_DOWNLOAD = [
     "stock_centroids"
-    # Add more filenames as needed
 ]
 
 # Local directory on the ground station to save downloaded files
-DOWNLOAD_DIR = "downloaded_files"
+misison_dir = "/home/colin/AEAC-2025-Mission-1"
+
+csv_dir = os.path.join(misison_dir, "/MAIN_MISSION/csvs")
 
 # --- Script Logic ---
 
@@ -49,19 +50,14 @@ def download_file(file_url, local_filename):
 def main():
     """Main function to orchestrate the download."""
     # Create the local download directory if it doesn't exist
-    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    print(f"Ensured download directory exists: {DOWNLOAD_DIR}")
+    os.makedirs(csv_dir, exist_ok=True)
+    print(f"Ensured download directory exists: {csv_dir}")
 
     successful_downloads = 0
     for filename in FILES_TO_DOWNLOAD:
         file_url = urljoin(BASE_URL, filename) # Construct full URL
         # Prepend the download directory path to the filename
-        local_path = os.path.join(DOWNLOAD_DIR, filename)
-
-        # Optional: Check if file already exists to avoid re-downloading
-        # if os.path.exists(local_path):
-        #     print(f"Skipping {filename}, already exists locally.")
-        #     continue # Skip to the next file
+        local_path = os.path.join(csv_dir, filename)
 
         if download_file(file_url, local_path):
             successful_downloads += 1

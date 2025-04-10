@@ -424,7 +424,6 @@ class pymav():
             # If the file doesn't exist, write the header
             if not file_exists:
                 writer.writerow(["Latitude", "Longitude", "Description"])
-            
 
             writer.writerow([coordinates[0], coordinates[1], desc])
 
@@ -553,3 +552,28 @@ class pymav():
         total_time = time.time() - start_time
         print("SCAN FINISHED")
         print(f"Total time: {total_time:.2f} seconds")
+
+    def generate_scan_points(scan_width=2, radius_of_scan = 13):
+        e = scan_width
+        radius = radius_of_scan
+        x = []
+        y = []
+        high = True
+        n_passes = int(2*radius/e)
+        for n in range(n_passes):
+            w = e*(1/2 + n)
+            h = np.sqrt(radius**2 - (radius - w)**2)
+            if high:
+                x.append(-radius + w)
+                y.append(h)
+                x.append(-radius + w)
+                y.append(-h)
+                high = False
+            else:
+                x.append(-radius + w)
+                y.append(-h)
+                x.append(-radius + w)
+                y.append(h)
+                high = True
+
+            return x,y

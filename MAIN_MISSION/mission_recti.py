@@ -4,6 +4,7 @@ from MAIN_MISSION.helper_func import *
 from geopy.distance import distance
 from geopy import Point
 
+
 nav = pymav(gps_thresh=1.6, ip = 'tcp:127.0.0.1:5763')
 mission_height = 15
 
@@ -22,42 +23,26 @@ input("Free to fly in LOITER. Press enter to get position of the center of scan 
 
 pos = nav.get_local_pos()
 global_pos = nav.get_global_pos()
-reference_point = Point(global_pos[0], global_pos[1])
 print(f"Current position: {pos}")
 
-input("Press Confirm local pos...")
-
-e = 2
-radius = 13
-x = []
-y = []
-high = True
-n_passes = int(2*radius/e)
-for n in range(n_passes):
-    w = e*(1/2 + n)
-    h = np.sqrt(radius**2 - (radius - w)**2)
-    if high:
-        x.append(-radius + w)
-        y.append(h)
-        x.append(-radius + w)
-        y.append(-h)
-        high = False
+entree = input("Press 'y', and enter, to send drone in autonomous scan")
+while entree != 'y':
+    entree = input("Press 'y' to send drone in autonomous scan")
+    if entree == 'y':
+        print("Drone will now be sent to autonomous scan")
     else:
-        x.append(-radius + w)
-        y.append(-h)
-        x.append(-radius + w)
-        y.append(h)
-        high = True
+        print("Invalid input. Please enter 'y' to proceed.")
+
+x,y = nav.generate_scan_points(scan_width=2, radius_of_scan=13)
 
 start_time = time.time()
 
+reference_point = Point(global_pos[0], global_pos[1])
 for i in range(len(x)):
-    #wp = [x[i] + pos[0], y[i] + pos[1], -mission_height]
     point_north = distance(meters=x[i]).destination(reference_point, bearing=0)
     point_final = distance(meters=y[i]).destination(point_north, bearing=90)
-    #nav.local_target(wp, acceptance_radius=1.7)
     nav.global_target([point_final.latitude, point_final.longitude, mission_height])
-    print(f"Current position: {pos}")
+    print(f"Point Reached, aiming to next point")
 
 total_time = time.time() - start_time
 print(f"Total time: {total_time} seconds")
