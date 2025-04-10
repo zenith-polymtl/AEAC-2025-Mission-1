@@ -1,6 +1,6 @@
 from pymavlink import mavutil
 import time
-from helper_func import *
+from MAIN_MISSION.helper_func import *
 
 mission_height = 7
 

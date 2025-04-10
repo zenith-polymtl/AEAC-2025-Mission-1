@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from helper_func import *
+from MAIN_MISSION.helper_func import *
 from geopy.distance import distance
 from geopy import Point
 
