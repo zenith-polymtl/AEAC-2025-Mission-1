@@ -59,7 +59,7 @@ class pymav():
                 connection.target_system,
                 connection.target_component,
                 mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,  # Global frame with relative altitude
-                0b110111111000,  # Position mask
+                0b100111111000,  # Position mask
                 int(wp[0] * 1e7),  # Latitude in degrees * 1e7
                 int(wp[1] * 1e7),  # Longitude in degrees * 1e7
                 wp[2],  # Altitude in meters (relative to home)
