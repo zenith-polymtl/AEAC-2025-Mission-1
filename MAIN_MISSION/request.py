@@ -50,8 +50,8 @@ def download_file(file_url, local_filename):
 def main():
     """Main function to orchestrate the download."""
     # Create the local download directory if it doesn't exist
-    os.makedirs(csv_dir, exist_ok=True)
-    print(f"Ensured download directory exists: {csv_dir}")
+    #os.makedirs(csv_dir, exist_ok=True)
+    #print(f"Ensured download directory exists: {csv_dir}")
 
     successful_downloads = 0
     for filename in FILES_TO_DOWNLOAD:
