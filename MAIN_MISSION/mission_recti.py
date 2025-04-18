@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from MAIN_MISSION.helper_func import *
+from helper_func import *
 from geopy.distance import distance
 from geopy import Point
 
@@ -33,14 +33,36 @@ while entree != 'y':
     else:
         print("Invalid input. Please enter 'y' to proceed.")
 
-x,y = nav.generate_scan_points(scan_width=2, radius_of_scan=13)
+e = 8
+radius = 100
+x = []
+y = []
+high = True
+n_passes = int(2*radius/e)
+for n in range(n_passes):
+    w = e*(1/2 + n)
+    h = np.sqrt(radius**2 - (radius - w)**2)
+    if high:
+        x.append(-radius + w)
+        y.append(h)
+        x.append(-radius + w)
+        y.append(-h)
+        high = False
+    else:
+        x.append(-radius + w)
+        y.append(-h)
+        x.append(-radius + w)
+        y.append(h)
+        high = True
+
+
 
 start_time = time.time()
 
 reference_point = Point(global_pos[0], global_pos[1])
 for i in range(len(x)):
-    point_north = distance(meters=x[i]).destination(reference_point, bearing=0)
-    point_final = distance(meters=y[i]).destination(point_north, bearing=90)
+    point_north = distance(meters=y[i]).destination(reference_point, bearing=0)
+    point_final = distance(meters=x[i]).destination(point_north, bearing=90)
     nav.global_target([point_final.latitude, point_final.longitude, mission_height])
     print(f"Point Reached, aiming to next point")
 
