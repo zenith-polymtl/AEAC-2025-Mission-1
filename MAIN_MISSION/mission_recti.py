@@ -1,6 +1,7 @@
 import time
 import numpy as np
 from helper_func import *
+from helper_func import *
 from geopy.distance import distance
 from geopy import Point
 
@@ -61,8 +62,8 @@ start_time = time.time()
 
 reference_point = Point(global_pos[0], global_pos[1])
 for i in range(len(x)):
-    point_north = distance(meters=x[i]).destination(reference_point, bearing=0)
-    point_final = distance(meters=y[i]).destination(point_north, bearing=90)
+    point_north = distance(meters=y[i]).destination(reference_point, bearing=0)
+    point_final = distance(meters=x[i]).destination(point_north, bearing=90)
     nav.global_target([point_final.latitude, point_final.longitude, mission_height])
     print(f"Point Reached, aiming to next point")
 
