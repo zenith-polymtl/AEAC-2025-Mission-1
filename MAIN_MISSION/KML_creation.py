@@ -10,6 +10,22 @@ main_path = os.path.join(chemin_mission_1, "MAIN_MISSION")
 csv_path = os.path.join(main_path, "csvs")
 kml_path = os.path.join(main_path, "KMLS")
 
+def delete_files_in(folder_path):
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # delete file or link
+            elif os.path.isdir(file_path):
+                # optional: remove subdirectories too
+                import shutil
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
+
+delete_files_in(csv_path)
+delete_files_in(kml_path)
+
 '''
 Input du code suivant :
 fichiers 'stock_source_feu' & 'stock_centroids'
@@ -28,8 +44,8 @@ Auteur : Laurent Ducharme
 
 def haversine(coord1, coord2):
     R = 6372800  # Earth radius in meters
-    lat1, lon1 = coord1
-    lat2, lon2 = coord2
+    lat1, lon1 = float(coord1)
+    lat2, lon2 = float(coord2)
 
     phi1, phi2 = math.radians(lat1), math.radians(lat2) 
     dphi       = math.radians(lat2 - lat1)
@@ -49,12 +65,13 @@ source_feu = []
 
 while True:
     try:
-        print("Source of fire file exists, opening it...")
-        with open(csv_path, 'r', encoding='utf-8') as file:
+        
+        with open(os.path.join(csv_path, 'fire_coordinates.csv'), 'r', encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
             for row in reader:
                 source_feu = row
+        print("Source of fire file exists, opening it...")
         break
     except:
         print("Source of fire file not found, trying again later...")
@@ -69,7 +86,7 @@ version_KML = 1
 while True :
     liste_stock_centroids = []
 
-    file_path = os.path.join(csv_path, 'stock_centroids')
+    file_path = os.path.join(csv_path, 'stock_centroids.csv')
     with open(file_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         for row in reader:

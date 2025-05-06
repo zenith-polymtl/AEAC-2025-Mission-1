@@ -4,9 +4,10 @@ import os
 
 
 # Chemins absolus vers les scripts
-base_dir = "/home/colin/AEAC-2025-Mission-1/MAIN_MISSION"
-KML_creation_script = os.path.join(base_dir, "KML_creation.py")
-request_script = os.path.join(base_dir, "request.py")
+base_dir = "/home/colin/AEAC-2025-Mission-1"
+mission_dir = os.path.join(base_dir, "MAIN_MISSION")
+KML_creation_script = os.path.join(mission_dir, "KML_creation.py")
+request_script = os.path.join(mission_dir, "request.py")
 
 # Lancer les scripts
 KML_creation_process = subprocess.Popen(["python3", KML_creation_script])

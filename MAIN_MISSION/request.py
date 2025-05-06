@@ -5,19 +5,20 @@ from urllib.parse import urljoin
 
 # --- Configuration ---
 # Replace with the actual IP address of the source computer
-SERVER_IP = "192.168.30.223" # inet sur commande: ip a dans le terminal de RbP
+#SERVER_IP = "192.168.30.215" # inet sur commande: ip a dans le terminal de RbP
+SERVER_IP = 'zenith.local'
 SERVER_PORT = 8000
 BASE_URL = f"http://{SERVER_IP}:{SERVER_PORT}/"
 
 # List of specific files to download from the server
 FILES_TO_DOWNLOAD = [
-    "stock_centroids"
+    "stock_centroids.csv"
 ]
 
 # Local directory on the ground station to save downloaded files
-misison_dir = "/home/colin/AEAC-2025-Mission-1"
+mission_dir = "/home/colin/AEAC-2025-Mission-1"
 
-csv_dir = os.path.join(misison_dir, "/MAIN_MISSION/csvs")
+csv_dir = os.path.join(mission_dir, "MAIN_MISSION", "csvs")
 
 # --- Script Logic ---
 
