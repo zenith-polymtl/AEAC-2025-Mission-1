@@ -58,7 +58,7 @@ for n in range(n_passes):
 
 start_time = time.time()
 
-
+x,y = y, x
 
 reference_point = Point(global_pos[0], global_pos[1])
 for i in range(len(x)):

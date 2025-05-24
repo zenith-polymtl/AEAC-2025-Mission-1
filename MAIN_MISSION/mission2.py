@@ -16,7 +16,9 @@ input('Enter when mode set to GUIDED')
 # Set mode to GUIDED
 
 val = input("Now arm the drone, and press enter to takeoff... s to skip")
+
 if val != 's':
+
     nav.takeoff(mission_height)
 
 all = [source_loc] + buckets
@@ -28,7 +30,9 @@ while True:
     if entry == 'a':
 
         if current >= len(all):
+
             print("All targets have been visited. Returning to launch...")
+
             nav.RTL()
             break
 
@@ -36,17 +40,21 @@ while True:
         current += 1
 
         nav.global_target([target_loc[0], target_loc[1], mission_height])
+
         print(f"Reached autonomous target at {target_loc}")
 
     if entry.strip().lower() == 'rtl':
         print("Returning to launch...")
         nav.RTL()
+
         break
     elif entry.strip().startswith('so'):
+
         target_loc = source_loc
         print(f"Going to source at {target_loc}")
         nav.global_target([target_loc[0], target_loc[1], mission_height])
     else:
+
         try:
             bucket_index = int(entry)
             if 0 <= bucket_index < len(buckets):
